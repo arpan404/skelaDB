@@ -1,0 +1,296 @@
+{
+  "apiVersion": "apiextensions.k8s.io/v1",
+  "kind": "CustomResourceDefinition",
+  "metadata": {
+    "name": "branches.skeladb.io"
+  },
+  "spec": {
+    "group": "skeladb.io",
+    "names": {
+      "kind": "Branch",
+      "plural": "branches",
+      "shortNames": [
+        "br"
+      ],
+      "singular": "branch"
+    },
+    "scope": "Namespaced",
+    "versions": [
+      {
+        "additionalPrinterColumns": [
+          {
+            "jsonPath": ".spec.project",
+            "name": "Project",
+            "type": "string"
+          },
+          {
+            "jsonPath": ".status.phase",
+            "name": "Phase",
+            "type": "string"
+          }
+        ],
+        "name": "v1alpha1",
+        "schema": {
+          "openAPIV3Schema": {
+            "description": "Auto-generated derived type for BranchSpec via `CustomResource`",
+            "properties": {
+              "spec": {
+                "properties": {
+                  "allowedCidrs": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 64,
+                    "nullable": true,
+                    "type": "array"
+                  },
+                  "backupIntervalSeconds": {
+                    "default": 86400,
+                    "format": "uint32",
+                    "minimum": 0.0,
+                    "type": "integer"
+                  },
+                  "backupRetainCount": {
+                    "default": 7,
+                    "format": "uint32",
+                    "minimum": 1.0,
+                    "type": "integer"
+                  },
+                  "blockedCidrs": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 64,
+                    "nullable": true,
+                    "type": "array"
+                  },
+                  "connectionEnabled": {
+                    "default": true,
+                    "type": "boolean"
+                  },
+                  "cpu": {
+                    "default": "500m",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "image": {
+                    "maxLength": 512,
+                    "minLength": 1,
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "memory": {
+                    "default": "1Gi",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "parent": {
+                    "maxLength": 48,
+                    "minLength": 1,
+                    "nullable": true,
+                    "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+                    "type": "string"
+                  },
+                  "postgresMajor": {
+                    "default": 18,
+                    "format": "uint16",
+                    "maximum": 19.0,
+                    "minimum": 12.0,
+                    "type": "integer"
+                  },
+                  "project": {
+                    "maxLength": 48,
+                    "minLength": 1,
+                    "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+                    "type": "string"
+                  },
+                  "queryStatistics": {
+                    "nullable": true,
+                    "type": "boolean"
+                  },
+                  "readReplicas": {
+                    "format": "uint8",
+                    "maximum": 3.0,
+                    "minimum": 0.0,
+                    "nullable": true,
+                    "type": "integer"
+                  },
+                  "restore": {
+                    "nullable": true,
+                    "properties": {
+                      "at": {
+                        "maxLength": 40,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "backupName": {
+                        "maxLength": 160,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "prefix": {
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "at",
+                      "prefix"
+                    ],
+                    "type": "object"
+                  },
+                  "storage": {
+                    "default": "10Gi",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "storageMode": {
+                    "default": "pvc",
+                    "enum": [
+                      "pvc",
+                      "separated"
+                    ],
+                    "type": "string"
+                  },
+                  "suspendAfterSeconds": {
+                    "default": 300,
+                    "format": "uint32",
+                    "minimum": 0.0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "project"
+                ],
+                "type": "object",
+                "x-kubernetes-validations": [
+                  {
+                    "rule": "self.project == oldSelf.project"
+                  },
+                  {
+                    "rule": "has(self.parent) == has(oldSelf.parent) && (!has(self.parent) || self.parent == oldSelf.parent)"
+                  },
+                  {
+                    "rule": "has(self.restore) == has(oldSelf.restore) && (!has(self.restore) || self.restore == oldSelf.restore)"
+                  },
+                  {
+                    "rule": "has(self.image) == has(oldSelf.image) && (!has(self.image) || self.image == oldSelf.image)"
+                  },
+                  {
+                    "rule": "self.storage == oldSelf.storage"
+                  },
+                  {
+                    "rule": "self.storageMode == oldSelf.storageMode"
+                  },
+                  {
+                    "rule": "self.postgresMajor == oldSelf.postgresMajor"
+                  },
+                  {
+                    "rule": "!has(self.parent) || !has(self.restore)"
+                  }
+                ]
+              },
+              "status": {
+                "nullable": true,
+                "properties": {
+                  "backupAzureAccount": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "backupPrefix": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "computeGeneration": {
+                    "default": 0,
+                    "description": "The monotonic term leased to this compute instance; the WAL proposer uses it so a restart\nor a replacement never picks a term below an earlier instance's.",
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "host": {
+                    "default": "",
+                    "type": "string"
+                  },
+                  "lastBackupAt": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "observedGeneration": {
+                    "default": 0,
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "passwordSet": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "phase": {
+                    "enum": [
+                      "Pending",
+                      "Starting",
+                      "Running",
+                      "Suspended"
+                    ],
+                    "type": "string"
+                  },
+                  "readReplicasReady": {
+                    "default": 0,
+                    "format": "uint8",
+                    "maximum": 255.0,
+                    "minimum": 0.0,
+                    "type": "integer"
+                  },
+                  "storagePool": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "suspendedAt": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "timeline": {
+                    "format": "uint32",
+                    "minimum": 0.0,
+                    "nullable": true,
+                    "type": "integer"
+                  },
+                  "tlsSecretVersion": {
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "phase"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "spec"
+            ],
+            "title": "Branch",
+            "type": "object",
+            "x-kubernetes-validations": [
+              {
+                "rule": "size(self.metadata.name) <= 48 && self.metadata.name.matches('^[a-z]([-a-z0-9]*[a-z0-9])?$')"
+              },
+              {
+                "rule": "!has(self.spec.parent) || self.spec.parent != self.metadata.name"
+              }
+            ]
+          }
+        },
+        "served": true,
+        "storage": true,
+        "subresources": {
+          "status": {}
+        }
+      }
+    ]
+  }
+}

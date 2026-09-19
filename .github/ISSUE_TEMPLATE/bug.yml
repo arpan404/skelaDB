@@ -1,0 +1,21 @@
+name: Bug report
+description: Something broke on a released version
+labels: [bug]
+body:
+  - type: input
+    attributes:
+      label: Release version
+      placeholder: 0.0.1
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What happened
+      description: Expected vs actual, with redacted logs
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true

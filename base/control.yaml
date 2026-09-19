@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skela-control
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app: skela-control }
+  template:
+    metadata:
+      labels: { app: skela-control }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile: { type: RuntimeDefault }
+      serviceAccountName: skela-control
+      terminationGracePeriodSeconds: 7250
+      containers:
+        - name: control
+          image: skeladb/control:dev
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+            seccompProfile: { type: RuntimeDefault }
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: SKELA_NAMESPACE, valueFrom: { fieldRef: { fieldPath: metadata.namespace } } }
+            - { name: SKELA_PG_IMAGE, value: skeladb/postgres:18.4 }
+            - { name: SKELA_API_TOKEN, valueFrom: { secretKeyRef: { name: skela-api, key: token } } }
+          resources:
+            requests: { cpu: "100m", memory: 256Mi }
+            limits: { cpu: "500m", memory: 256Mi }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skela-control
+spec:
+  selector: { app: skela-control }
+  ports: [{ port: 8080 }]

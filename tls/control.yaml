@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skela-control
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 65532
+      containers:
+        - name: control
+          env:
+            - { name: SKELA_COMPUTE_ISSUER, value: skela-issuer }
+            - { name: SKELA_TLS_CERT, value: /etc/skela/tls/tls.crt }
+            - { name: SKELA_TLS_KEY, value: /etc/skela/tls/tls.key }
+          volumeMounts:
+            - { name: tls, mountPath: /etc/skela/tls, readOnly: true }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080, scheme: HTTPS }
+      volumes:
+        - name: tls
+          secret: { secretName: skela-control-tls, defaultMode: 288 }

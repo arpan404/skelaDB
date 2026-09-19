@@ -1,0 +1,22 @@
+# Requires GKE Workload Identity Federation on every node pool running computes.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-gke-workload-identity
+  namespace: skela
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: skeladb.io/project, operator: Exists }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - ipBlock: { cidr: 169.254.169.252/32 }
+      ports:
+        - { protocol: TCP, port: 988 }
+        - { protocol: TCP, port: 987 }
+    - to:
+        - ipBlock: { cidr: 169.254.169.254/32 }
+      ports:
+        - { protocol: TCP, port: 80 }
+        - { protocol: TCP, port: 8080 }

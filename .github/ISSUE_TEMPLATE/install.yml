@@ -1,0 +1,30 @@
+name: Install failure
+description: The installer or first boot failed
+labels: [install]
+body:
+  - type: input
+    attributes:
+      label: Release version
+      placeholder: 0.0.1
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Provider and Kubernetes version
+      placeholder: aws, EKS 1.33
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Image digests used
+      description: The SKELA_*_IMAGE values (digests, never secrets)
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Logs (redacted)
+      description: Redact tokens, keys and connection strings
+      render: shell
+    validations:
+      required: true

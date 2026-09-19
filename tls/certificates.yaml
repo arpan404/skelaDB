@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: skela-control-tls
+  namespace: skela
+spec:
+  secretName: skela-control-tls
+  issuerRef: { name: skela-issuer, kind: Issuer }
+  dnsNames: [skela-control, skela-control.skela.svc, skela-control.skela.svc.cluster.local]
+  privateKey: { algorithm: ECDSA, size: 256, rotationPolicy: Always }
+  usages: [server auth]
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: skela-proxy-tls
+  namespace: skela
+spec:
+  secretName: skela-proxy-tls
+  issuerRef: { name: skela-issuer, kind: Issuer }
+  dnsNames: [postgres.invalid]
+  privateKey: { algorithm: ECDSA, size: 256, rotationPolicy: Always }
+  usages: [server auth]

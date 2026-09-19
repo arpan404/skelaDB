@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skela-proxy
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65532
+      containers:
+        - name: proxy
+          env:
+            - { name: SKELA_TLS_CERT, value: /etc/skela/tls/tls.crt }
+            - { name: SKELA_TLS_KEY, value: /etc/skela/tls/tls.key }
+            - { name: SKELA_CONTROL_URL, value: https://skela-control.skela.svc:8080 }
+            - { name: SKELA_CONTROL_TLS_CA, value: /etc/skela/trust/ca.crt }
+            - { name: SKELA_UPSTREAM_TLS_CA, value: /etc/skela/trust/ca.crt }
+          volumeMounts:
+            - { name: tls, mountPath: /etc/skela/tls, readOnly: true }
+            - { name: trust, mountPath: /etc/skela/trust, readOnly: true }
+      volumes:
+        - name: tls
+          secret: { secretName: skela-proxy-tls, defaultMode: 288 }
+        - name: trust
+          secret:
+            secretName: skela-control-tls
+            defaultMode: 288
+            items: [{ key: ca.crt, path: ca.crt }]

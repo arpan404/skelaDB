@@ -1,0 +1,10 @@
+name: Feature request
+description: Ask for something new
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: Problem and proposal
+      description: What job can't you do today, and what should change?
+    validations:
+      required: true

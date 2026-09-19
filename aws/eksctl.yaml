@@ -1,0 +1,23 @@
+# eksctl create cluster -f deploy/aws/eksctl.yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: skela
+  region: us-east-1
+  version: "1.33"
+addons:
+  - name: aws-ebs-csi-driver
+    wellKnownPolicies:
+      ebsCSIController: true
+iam:
+  withOIDC: true
+managedNodeGroups:
+  - name: compute
+    instanceType: m7g.xlarge
+    desiredCapacity: 2
+    minSize: 1
+    maxSize: 20
+    disableIMDSv1: true
+    disablePodIMDS: true
+    volumeEncrypted: true
+    volumeSize: 50
