@@ -1,7 +1,13 @@
 # SkelaDB
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Releases](https://img.shields.io/github/v/release/arpan404/skeladb?label=releases)](releases/)
+
 Serverless Postgres that runs in your own cloud account. Branch in milliseconds,
 scale to zero, pay object-storage prices for history.
+
+Learn more at [skeladb.com](https://skeladb.com) — see
+[pricing](https://skeladb.com/pricing) and [docs](https://skeladb.com/docs).
 
 This is the public front door: install manifests, pinned releases and issue
 tracking. The database source lives in a private repository — customers receive
